@@ -20,23 +20,27 @@ extension NSObject {
 
 }
 
-let bb = "af_header"
 
 extension UIScrollView {
     
-
+    private struct AssociatedKeys {
+        static var Af_header = "af_header"
+    }
     
-    private var af_header: AFBaseRefreshHeader? {
+    var af_header: AFBaseRefreshHeader? {
         get {
-            return objc_getAssociatedObject(self, "af_header") as? AFBaseRefreshHeader
+            return objc_getAssociatedObject(self, &AssociatedKeys.Af_header) as? AFBaseRefreshHeader
         }
         set {
             if let newValue = newValue {
-                objc_setAssociatedObject(self, "af_header",newValue ,.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                objc_setAssociatedObject(
+                    self,
+                    &AssociatedKeys.Af_header,
+                    newValue,
+                    .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             }
         }
     }
-
     
     func addRefreshHeaderWithHandle(handle: dispatch_block_t) {
         let header = AFBaseRefreshHeader.init(frame: CGRectMake(0, -60, UIScreen.mainScreen().bounds.size.width, 60))
@@ -46,7 +50,9 @@ extension UIScrollView {
         
     }
    
-    
+    func endRefresh() {
+        self.af_header?.stopAnimation()
+    }
     
     
 
